@@ -8,6 +8,7 @@ function remove_ldap {
 }
 
 function init_ldap {
+  docker pull osixia/openldap:1.4.0
 }
 
 # Aergo Image가 없을 경우
