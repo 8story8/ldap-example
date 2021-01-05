@@ -1,3 +1,4 @@
 .*
 !.gitignore
+ldap/environment/config/env.startup.yaml
 build/**

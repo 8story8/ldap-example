@@ -14,7 +14,8 @@ function pull_ldap {
 }
 
 function init_ldap {
-  docker create --name ldap -v $SCRIPT_HOME/environment:/container/environment/01-custom -p 389:389 -p 636:636 osixia/openldap:$LDAP_VERSION --loglevel debug
+  cp $SCRIPT_HOME/environment/env.startup.yaml $SCRIPT_HOME/environment/config
+  docker create --name ldap -v $SCRIPT_HOME/environment/config:/container/environment/01-custom -p 389:389 -p 636:636 osixia/openldap:$LDAP_VERSION
   docker start ldap
 }
 
@@ -22,7 +23,7 @@ function restart_ldap {
   docker restart ldap
 }
 
-# Aergo Image가 없을 경우
+# LDAP Image가 없을 경우
 if [ -z $LDAP_IMAGE_ID ]; then
   pull_ldap
   init_ldap
