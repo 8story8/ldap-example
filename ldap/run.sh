@@ -2,27 +2,36 @@
 
 SCRIPT_HOME="$( cd "$(dirname "$0")" ; pwd -P )"
 
-LDAP_IMAGE_ID=$(docker images -q osixia/openldap:1.4.0)
+LDAP_VERSION="1.4.0"
+LDAP_IMAGE_ID=$(docker images -q osixia/openldap:$LDAP_VERSION)
 
 function remove_ldap {
+  docker rm -f ldap
+}
+
+function pull_ldap {
+  docker pull osixia/openldap:$LDAP_VERSION
 }
 
 function init_ldap {
-  docker pull osixia/openldap:1.4.0
+  docker create --name ldap -v $SCRIPT_HOME/environment:/container/environment/01-custom -p 389:389 -p 636:636 osixia/openldap:$LDAP_VERSION --loglevel debug
+  docker start ldap
+}
+
+function restart_ldap {
+  docker restart ldap
 }
 
 # Aergo Image가 없을 경우
 if [ -z $LDAP_IMAGE_ID ]; then
-  remove_ldap
+  pull_ldap
   init_ldap
-
 # LDAP Image가 있을 경우
 else
   LDAP_CONTAINER_ID=$(docker ps -aqf "name=ldap")
 
   # LDAP이 구동 중이지 않은 경우
   if [ -z $LDAP_CONTAINER_ID ]; then
-    remove_ldap
     init_ldap
   # LDAP이 구동 중인 경우
   else
@@ -33,7 +42,7 @@ else
       init_ldap
     # LDAP Container에 오류가 발생하지 않았을 경우
     else
-      docker restart ldap
+      restart_ldap
     fi
   fi
 fi

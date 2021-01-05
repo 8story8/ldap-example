@@ -1,6 +1,5 @@
-package io.blocko.controller;
+package io.blocko.api;
 
-import io.blocko.dto.LoginForm;
 import io.blocko.response.ResultForm;
 import io.blocko.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserApi {
 
   private final UserService userService;
 

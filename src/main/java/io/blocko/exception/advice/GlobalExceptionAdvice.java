@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
 
-  private static final String ERR_MSG = "서버 오류입니다.";
+  private static final String INTERNAL_ERR_MSG = "서버 오류입니다.";
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorForm handleException(Exception e){
     log.error("exception msg : " + e.getMessage());
-    return new ErrorForm(ERR_MSG);
+    return new ErrorForm(INTERNAL_ERR_MSG);
   }
 
   @ExceptionHandler(TokenValidationException.class)

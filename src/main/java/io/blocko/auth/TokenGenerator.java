@@ -1,8 +1,8 @@
-package io.blocko.util;
+package io.blocko.auth;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenUtil {
+public class TokenGenerator {
 
 }

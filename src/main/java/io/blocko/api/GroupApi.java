@@ -1,4 +1,4 @@
-package io.blocko.controller;
+package io.blocko.api;
 
 import io.blocko.response.ResultForm;
 import io.blocko.service.GroupService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/groups")
 @RequiredArgsConstructor
-public class GroupController {
+public class GroupApi {
 
   private final GroupService groupService;
 
