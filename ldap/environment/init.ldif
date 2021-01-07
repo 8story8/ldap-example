@@ -1,0 +1,16 @@
+dn: ou=user,dc=blocko,dc=io
+objectClass: organizationalUnit
+ou: user
+
+dn: ou=admin,dc=blocko,dc=io
+objectClass: organizationalUnit
+ou: admin
+
+dn: uid=8story8@blocko.io,ou=admin,dc=blocko,dc=io
+objectClass: person
+objectClass: uidObject
+objectClass: simpleSecurityObject
+cn: 8story8
+sn: 8story8
+uid: 8story8@blocko.io
+userPassword: 1234

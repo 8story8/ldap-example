@@ -15,28 +15,28 @@ public class GroupApi {
 
   private final GroupService groupService;
 
-  @PostMapping
-  public ResponseEntity<ResultForm> register(){
-    return ResponseEntity.ok(new ResultForm());
-  }
-
-  @PostMapping
-  public ResponseEntity<ResultForm> update(){
-    return ResponseEntity.ok(new ResultForm());
-  }
-
-  @PostMapping
-  public ResponseEntity<ResultForm> delete(){
-    return ResponseEntity.ok(new ResultForm());
-  }
-
-  @PostMapping
-  public ResponseEntity<ResultForm> findByEmail(){
-    return ResponseEntity.ok(new ResultForm());
-  }
-
-  @PostMapping
-  public ResponseEntity<ResultForm> findAll(){
-    return ResponseEntity.ok(new ResultForm());
-  }
+//  @PostMapping
+//  public ResponseEntity<ResultForm> register(){
+//    return ResponseEntity.ok(new ResultForm());
+//  }
+//
+//  @PostMapping
+//  public ResponseEntity<ResultForm> update(){
+//    return ResponseEntity.ok(new ResultForm());
+//  }
+//
+//  @PostMapping
+//  public ResponseEntity<ResultForm> delete(){
+//    return ResponseEntity.ok(new ResultForm());
+//  }
+//
+//  @PostMapping
+//  public ResponseEntity<ResultForm> findByEmail(){
+//    return ResponseEntity.ok(new ResultForm());
+//  }
+//
+//  @PostMapping
+//  public ResponseEntity<ResultForm> findAll(){
+//    return ResponseEntity.ok(new ResultForm());
+//  }
 }

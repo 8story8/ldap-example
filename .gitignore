@@ -1,4 +1,5 @@
 .*
 !.gitignore
 ldap/environment/config/env.startup.yaml
+ldap/init/init.ldif
 build/**

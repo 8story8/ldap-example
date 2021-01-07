@@ -17,6 +17,7 @@ public class GlobalExceptionAdvice {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorForm handleException(Exception e){
+    e.printStackTrace();
     log.error("exception msg : " + e.getMessage());
     return new ErrorForm(INTERNAL_ERR_MSG);
   }

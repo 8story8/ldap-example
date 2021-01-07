@@ -15,7 +15,12 @@ function pull_ldap {
 
 function init_ldap {
   cp $SCRIPT_HOME/environment/env.startup.yaml $SCRIPT_HOME/environment/config
-  docker create --name ldap -v $SCRIPT_HOME/environment/config:/container/environment/01-custom -p 389:389 -p 636:636 osixia/openldap:$LDAP_VERSION
+  cp $SCRIPT_HOME/environment/init.ldif $SCRIPT_HOME/init
+  docker create --name ldap \
+    -v $SCRIPT_HOME/environment/config:/container/environment/01-custom \
+    -v $SCRIPT_HOME/init:/container/service/slapd/assets/config/bootstrap/ldif/custom\
+    -p 389:389 -p 636:636 \
+    osixia/openldap:$LDAP_VERSION --loglevel debug --copy-service
   docker start ldap
 }
 
