@@ -1,30 +1,55 @@
 package io.blocko.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import io.blocko.auth.LdapService;
+import io.blocko.auth.LdapUser;
+import io.blocko.dto.UserInfo;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements UserDetailsService {
+@RequiredArgsConstructor
+public class UserService {
 
-  public void register(){
+  private final LdapService ldapService;
+
+  /**
+   * 사용자 조회.
+   *
+   * @param email
+   * @return
+   */
+  public UserInfo findByEmail(String email) {
+    LdapUser ldapUser = ldapService.findByEmail(email).orElse(null);
+    return UserInfo.builder()
+        .email(ldapUser.getEmail())
+        .name(ldapUser.getName())
+        .groups(
+            ldapUser.getAuthorities().stream()
+                .map(group -> group.getAuthority().substring(5))
+                .collect(Collectors.toList()))
+        .build();
   }
 
-  public void update(){
-  }
-
-  public void delete(){
-  }
-
-  public void findByEmail(){
-  }
-
-  public void findAll(){
-  }
-
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return null;
+  /**
+   * 사용자 목록 조회.
+   *
+   * @return
+   */
+  public List<UserInfo> findAll() {
+    List<LdapUser> ldapUserList = ldapService.findAll();
+    return ldapUserList.stream()
+        .map(
+            ldapUser ->
+                UserInfo.builder()
+                    .email(ldapUser.getEmail())
+                    .name(ldapUser.getName())
+                    .groups(
+                        ldapUser.getAuthorities().stream()
+                            .map(group -> group.getAuthority().substring(5))
+                            .collect(Collectors.toList()))
+                    .build())
+        .collect(Collectors.toList());
   }
 }

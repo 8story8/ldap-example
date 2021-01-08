@@ -1,29 +1,30 @@
 package io.blocko.config;
 
+import io.blocko.auth.LdapAccessDeniedHandler;
 import io.blocko.auth.LdapAuthenticationProvider;
-import io.blocko.auth.TokenAuthenticationEntryPoint;
-import io.blocko.auth.TokenFilter;
+import io.blocko.auth.LdapTokenAuthenticationEntryPoint;
+import io.blocko.auth.LdapTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final LdapAuthenticationProvider ldapAuthenticationProvider;
-  private final TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint;
-  private final TokenFilter tokenFilter;
+  private final LdapTokenAuthenticationEntryPoint ldapTokenAuthenticationEntryPoint;
+  private final LdapAccessDeniedHandler ldapAccessDeniedHandler;
+
+  private final LdapTokenFilter ldapTokenFilter;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -48,18 +49,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers("/login")
         .permitAll()
-        .antMatchers("/users/**")
-        .authenticated()
-        .antMatchers("/groups/**")
-        .authenticated()
+        .antMatchers("/users").hasRole("ADMIN")
+        .antMatchers("/users/{email}").hasAnyRole("ADMIN", "USER")
         .and()
         .exceptionHandling()
-        .authenticationEntryPoint(tokenAuthenticationEntryPoint)
+        .authenticationEntryPoint(ldapTokenAuthenticationEntryPoint)
+        .accessDeniedHandler(ldapAccessDeniedHandler)
         .and()
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(ldapTokenFilter, UsernamePasswordAuthenticationFilter.class)
         .formLogin()
         .disable();
   }

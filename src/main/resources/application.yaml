@@ -1,12 +1,9 @@
 jwt:
   secret: secret
+  validity_time: 600000000000
+
 ldap:
   url: ldap://localhost:389
   base: dc=blocko,dc=io
   userDn: cn=admin,dc=blocko,dc=io
   password: admin
-
-spring:
-  logging:
-    level:
-      org.springframework.ldap.core: debug

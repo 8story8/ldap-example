@@ -2,6 +2,15 @@ dn: ou=user,dc=blocko,dc=io
 objectClass: organizationalUnit
 ou: user
 
+dn: uid=tester@blocko.io,ou=user,dc=blocko,dc=io
+objectClass: person
+objectClass: uidObject
+objectClass: simpleSecurityObject
+cn: tester
+sn: tester
+uid: tester@blocko.io
+userPassword: 4321
+
 dn: ou=admin,dc=blocko,dc=io
 objectClass: organizationalUnit
 ou: admin

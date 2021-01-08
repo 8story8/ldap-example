@@ -1,43 +1,41 @@
 package io.blocko.auth;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.blocko.exception.UnauthenticatedUserException;
+import io.blocko.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.filter.AndFilter;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.support.LdapUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LdapAuthenticationProvider implements AuthenticationProvider {
 
-  private final LdapTemplate template;
+  private final LdapService ldapService;
 
+  /**
+   * 사용자 인증.
+   * @param authentication
+   * @return
+   * @throws AuthenticationException
+   */
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    String email = authentication.getName().toString();
+    String email = authentication.getName();
     String password = (String) authentication.getCredentials();
-    AndFilter filter = new AndFilter();
-    filter.and(new EqualsFilter("uid", email));
-    boolean isAuthenticated =
-        template.authenticate(
-            LdapUtils.emptyLdapName(), filter.encode(), password);
-    System.out.println("is authenticated : " + isAuthenticated);
-    List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-    grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-    UserDetails userDetails = new User(email, password, grantedAuthorities);
-    return new UsernamePasswordAuthenticationToken(
-        userDetails, authentication.getCredentials().toString(), grantedAuthorities);
+
+    boolean isAuthenticated = ldapService.authenticate(email, password);
+
+    if (!isAuthenticated) {
+      throw new UnauthenticatedUserException();
+    } else {
+      LdapUser user = ldapService.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+      return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+    }
   }
 
   @Override
