@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,9 +23,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final LdapAuthenticationProvider ldapAuthenticationProvider;
   private final LdapTokenAuthenticationEntryPoint ldapTokenAuthenticationEntryPoint;
   private final LdapAccessDeniedHandler ldapAccessDeniedHandler;
-
   private final LdapTokenFilter ldapTokenFilter;
 
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers(
+        "/v2/api-docs", "/swagger-resources/**",
+        "/swagger-ui.html", "/webjars/**", "/swagger/**");
+  }
 
   @Bean
   @Override
