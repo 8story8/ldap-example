@@ -160,7 +160,7 @@ public class UserService {
     String name = userRegistration.getName();
     String password = userRegistration.getPassword();
 
-    if(!groupService.existsByGroup(group)){
+    if (!groupService.existsByGroup(group)) {
       throw new GroupNotFoundException();
     }
 
@@ -195,7 +195,7 @@ public class UserService {
     String group = userUpdate.getGroup();
     String email = userUpdate.getEmail();
 
-    if(!groupService.existsByGroup(group)){
+    if (!groupService.existsByGroup(group)) {
       throw new GroupNotFoundException();
     }
 
@@ -210,7 +210,8 @@ public class UserService {
     context.setAttributeValue("cn", userUpdate.getToBeUpdatedName());
     context.setAttributeValue("sn", userUpdate.getToBeUpdatedName());
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    context.setAttributeValue("userPassword", passwordEncoder.encode(userUpdate.getToBeUpdatedPassword()));
+    context.setAttributeValue(
+        "userPassword", passwordEncoder.encode(userUpdate.getToBeUpdatedPassword()));
     template.modifyAttributes(context);
     return UserInfo.builder()
         .email(email)
@@ -242,6 +243,7 @@ public class UserService {
 
   /**
    * 사용자 인증 후 사용자 정보 반환.
+   *
    * @param email
    * @return
    */
