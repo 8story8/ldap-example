@@ -7,6 +7,7 @@ import io.blocko.dto.UserUpdate;
 import io.blocko.exception.UnauthorizedUserException;
 import io.blocko.response.ResultForm;
 import io.blocko.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class UserApi {
   private final UserService userService;
 
   @GetMapping("/{email}")
+  @ApiOperation(value = "사용자 조회", notes = "ADMIN, USER")
   public ResponseEntity<ResultForm> findByEmail(@PathVariable("email") String email) {
     validateFindByEmail(email);
     UserInfo userInfo = userService.findByEmail(email);
@@ -54,6 +56,7 @@ public class UserApi {
   }
 
   @GetMapping
+  @ApiOperation(value = "사용자 목록 조회", notes = "ADMIN")
   public ResponseEntity<ResultForm> findAll() {
     List<UserInfo> userInfoList = userService.findAll();
     return ResponseEntity.ok(new ResultForm(userInfoList));
@@ -66,6 +69,7 @@ public class UserApi {
    * @return
    */
   @PostMapping
+  @ApiOperation(value = "사용자 등록", notes = "ALL")
   public ResponseEntity<ResultForm> register(@RequestBody UserRegistration userRegistration) {
     UserInfo userInfo = userService.register(userRegistration);
     return ResponseEntity.ok(new ResultForm(userInfo));
@@ -78,13 +82,28 @@ public class UserApi {
    * @return
    */
   @PutMapping
+  @ApiOperation(value = "사용자 수정", notes = "ADMIN, USER : 자신만 수정 가능")
   public ResponseEntity<ResultForm> update(@RequestBody UserUpdate userUpdate) {
-    validateUpdate(userUpdate.getEmail());
+    validateUpdateAndDelete(userUpdate.getEmail());
     UserInfo userInfo = userService.update(userUpdate);
     return ResponseEntity.ok(new ResultForm(userInfo));
   }
 
-  private void validateUpdate(String email) {
+  /**
+   * 사용자 삭제.
+   *
+   * @param userDelete
+   * @return
+   */
+  @DeleteMapping
+  @ApiOperation(value = "사용자 삭제", notes = "ADMIN, USER : 자신만 삭제 가능")
+  public ResponseEntity<ResultForm> delete(@RequestBody UserDelete userDelete) {
+    validateUpdateAndDelete(userDelete.getEmail());
+    UserInfo userInfo = userService.delete(userDelete);
+    return ResponseEntity.ok(new ResultForm(userInfo));
+  }
+
+  private void validateUpdateAndDelete(String email) {
     boolean isMe = false;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     for (GrantedAuthority authority : authentication.getAuthorities()) {
@@ -96,17 +115,5 @@ public class UserApi {
     if (!isMe) {
       throw new UnauthorizedUserException();
     }
-  }
-
-  /**
-   * 사용자 삭제.
-   *
-   * @param userDelete
-   * @return
-   */
-  @DeleteMapping
-  public ResponseEntity<ResultForm> delete(@RequestBody UserDelete userDelete) {
-    UserInfo userInfo = userService.delete(userDelete);
-    return ResponseEntity.ok(new ResultForm(userInfo));
   }
 }

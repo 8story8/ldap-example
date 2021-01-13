@@ -90,7 +90,6 @@ public class GroupService {
                 return ctx.getStringAttribute("ou").toUpperCase();
               }
             });
-
     return groupList;
   }
 

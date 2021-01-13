@@ -42,7 +42,7 @@ public class LdapTokenUtil {
     String tokenHeader = request.getHeader(HEADER_KEY);
     String token = null;
     if (StringUtils.hasText(tokenHeader) && tokenHeader.startsWith(HEADER_VALUE)) {
-      token = tokenHeader.substring(7, tokenHeader.length());
+      token = tokenHeader.substring(7);
     }
     return token;
   }
