@@ -7,6 +7,8 @@ LDAP_IMAGE_ID=$(docker images -q osixia/openldap:$LDAP_VERSION)
 
 function remove_ldap {
   docker rm -f ldap
+  rm -rf $SCRIPT_HOME/init/init.ldif
+  rm -rf $SCRIPT_HOME/environment/config/env.startup.yaml
 }
 
 function pull_ldap {
@@ -25,7 +27,8 @@ function init_ldap {
 }
 
 function restart_ldap {
-  docker restart ldap
+  remove_ldap
+  init_ldap
 }
 
 # LDAP Image가 없을 경우
@@ -41,14 +44,6 @@ else
     init_ldap
   # LDAP이 구동 중인 경우
   else
-    LDAP_CONTAINER_EXIT_CODE=$(docker inspect $LDAP_CONTAINER_ID --format='{{.State.ExitCode}}')
-    # LDAP Container에 오류가 발생했을 경우
-    if [ $LDAP_CONTAINER_EXIT_CODE -ne 0 ]; then
-      remove_ldap
-      init_ldap
-    # LDAP Container에 오류가 발생하지 않았을 경우
-    else
-      restart_ldap
-    fi
+    restart_ldap
   fi
 fi
