@@ -1,6 +1,8 @@
 package io.blocko.exception;
 
-public class UnauthenticatedUserException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class UnauthenticatedUserException extends AuthenticationException {
 
   private static final String ERR_MSG = "인증할 수 없는 사용자입니다.";
 

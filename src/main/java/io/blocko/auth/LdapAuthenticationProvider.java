@@ -2,12 +2,14 @@ package io.blocko.auth;
 
 import io.blocko.exception.UnauthenticatedUserException;
 import io.blocko.exception.UserNotFoundException;
+import io.blocko.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LdapAuthenticationProvider implements AuthenticationProvider {
 
-  private final LdapService ldapService;
+  private final UserService userService;
 
   /**
    * 사용자 인증.
@@ -27,13 +29,11 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     String email = authentication.getName();
     String password = (String) authentication.getCredentials();
-
-    boolean isAuthenticated = ldapService.authenticate(email, password);
-
+    boolean isAuthenticated = userService.authenticate(email, password);
     if (!isAuthenticated) {
       throw new UnauthenticatedUserException();
     } else {
-      LdapUser user = ldapService.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+      LdapUser user = (LdapUser) userService.loadUserByEmail(email);
       return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
   }

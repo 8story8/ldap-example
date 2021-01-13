@@ -13,12 +13,12 @@ public class UserInfo {
 
   private String name;
 
-  private List<String> groups;
+  private String group;
 
   @Builder
-  public UserInfo(String email, String name, List<String> groups) {
+  public UserInfo(String email, String name, String group) {
     this.email = email;
     this.name = name;
-    this.groups = groups;
+    this.group = group;
   }
 }

@@ -1,6 +1,9 @@
 package io.blocko.api;
 
+import io.blocko.dto.UserDelete;
 import io.blocko.dto.UserInfo;
+import io.blocko.dto.UserRegistration;
+import io.blocko.dto.UserUpdate;
 import io.blocko.exception.UnauthorizedUserException;
 import io.blocko.response.ResultForm;
 import io.blocko.service.UserService;
@@ -10,8 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,26 +36,77 @@ public class UserApi {
     return ResponseEntity.ok(new ResultForm(userInfo));
   }
 
-  private void validateFindByEmail(String email){
+  private void validateFindByEmail(String email) {
     boolean isUser = false;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    for(GrantedAuthority authority : authentication.getAuthorities()){
-      if(authority.getAuthority().equals("ROLE_USER")){
-        if(authentication.getName().equals(email)){
+    for (GrantedAuthority authority : authentication.getAuthorities()) {
+      if (authority.getAuthority().equals("ROLE_USER")) {
+        if (authentication.getName().equals(email)) {
           isUser = true;
           break;
         }
       }
     }
 
-    if(isUser){
+    if (isUser) {
       throw new UnauthorizedUserException();
     }
   }
 
   @GetMapping
-  public ResponseEntity<ResultForm> findAll(){
+  public ResponseEntity<ResultForm> findAll() {
     List<UserInfo> userInfoList = userService.findAll();
     return ResponseEntity.ok(new ResultForm(userInfoList));
+  }
+
+  /**
+   * 사용자 등록.
+   *
+   * @param userRegistration
+   * @return
+   */
+  @PostMapping
+  public ResponseEntity<ResultForm> register(@RequestBody UserRegistration userRegistration) {
+    UserInfo userInfo = userService.register(userRegistration);
+    return ResponseEntity.ok(new ResultForm(userInfo));
+  }
+
+  /**
+   * 사용자 수정.
+   *
+   * @param userUpdate
+   * @return
+   */
+  @PutMapping
+  public ResponseEntity<ResultForm> update(@RequestBody UserUpdate userUpdate) {
+    validateUpdate(userUpdate.getEmail());
+    UserInfo userInfo = userService.update(userUpdate);
+    return ResponseEntity.ok(new ResultForm(userInfo));
+  }
+
+  private void validateUpdate(String email) {
+    boolean isMe = false;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    for (GrantedAuthority authority : authentication.getAuthorities()) {
+      if (authentication.getName().equals(email)) {
+        isMe = true;
+        break;
+      }
+    }
+    if (!isMe) {
+      throw new UnauthorizedUserException();
+    }
+  }
+
+  /**
+   * 사용자 삭제.
+   *
+   * @param userDelete
+   * @return
+   */
+  @DeleteMapping
+  public ResponseEntity<ResultForm> delete(@RequestBody UserDelete userDelete) {
+    UserInfo userInfo = userService.delete(userDelete);
+    return ResponseEntity.ok(new ResultForm(userInfo));
   }
 }

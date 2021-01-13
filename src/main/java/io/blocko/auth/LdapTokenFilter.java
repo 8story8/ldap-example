@@ -1,6 +1,6 @@
 package io.blocko.auth;
 
-import io.blocko.exception.UserNotFoundException;
+import io.blocko.service.UserService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class LdapTokenFilter extends OncePerRequestFilter {
 
-  private final LdapService ldapService;
+  private final UserService userService;
 
   private final LdapTokenUtil ldapTokenUtil;
 
@@ -28,8 +28,7 @@ public class LdapTokenFilter extends OncePerRequestFilter {
     String token = ldapTokenUtil.parse(request);
     if (token != null && ldapTokenUtil.validate(request, token)) {
       String email = ldapTokenUtil.extractEmail(token);
-      LdapUser user =
-          ldapService.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+      LdapUser user = (LdapUser) userService.loadUserByEmail(email);
       UsernamePasswordAuthenticationToken authenticationToken =
           new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
       authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
