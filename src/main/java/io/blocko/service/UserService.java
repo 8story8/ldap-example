@@ -1,10 +1,12 @@
 package io.blocko.service;
 
 import io.blocko.auth.LdapUser;
+import io.blocko.dto.LoginForm;
 import io.blocko.dto.UserDelete;
 import io.blocko.dto.UserInfo;
 import io.blocko.dto.UserRegistration;
 import io.blocko.dto.UserUpdate;
+import io.blocko.exception.GroupNotFoundException;
 import io.blocko.exception.UserAlreadyExistsException;
 import io.blocko.exception.UserNotFoundException;
 import java.util.ArrayList;
@@ -18,8 +20,6 @@ import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapNameBuilder;
@@ -28,6 +28,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +37,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private static final String ROLE_PREFIX = "ROLE_";
+
+  private final GroupService groupService;
 
   private final LdapTemplate template;
 
@@ -45,9 +49,32 @@ public class UserService {
    * @param password
    * @return
    */
-  public boolean authenticate(String email, String password) {
-    Filter filter = new EqualsFilter("uid", email);
-    return template.authenticate(LdapUtils.emptyLdapName(), filter.encode(), password);
+  public boolean authenticate(String email, String rawPassword) {
+    LdapQuery query = LdapQueryBuilder.query().where("uid").is(email);
+
+    List<LoginForm> user =
+        template.search(
+            query,
+            new AbstractContextMapper<LoginForm>() {
+              @Override
+              protected LoginForm doMapFromContext(DirContextOperations ctx) {
+                String email = ctx.getStringAttribute("uid");
+                byte[] bytes = (byte[]) ctx.getObjectAttribute("userPassword");
+                String password = new String(bytes);
+                return LoginForm.builder().email(email).password(password).build();
+              }
+            });
+
+    if (user.size() != 1) {
+      throw new UserNotFoundException();
+    }
+
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    if (passwordEncoder.matches(rawPassword, user.get(0).getPassword())) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -133,6 +160,10 @@ public class UserService {
     String name = userRegistration.getName();
     String password = userRegistration.getPassword();
 
+    if(!groupService.existsByGroup(group)){
+      throw new GroupNotFoundException();
+    }
+
     UserInfo user = findByGroupAndEmail(group, email).orElse(null);
 
     if (user != null) {
@@ -147,7 +178,8 @@ public class UserService {
     context.setAttributeValue("cn", name);
     context.setAttributeValue("sn", name);
     context.setAttributeValue("uid", email);
-    context.setAttributeValue("userPassword", password);
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    context.setAttributeValue("userPassword", passwordEncoder.encode(password));
     template.bind(context);
 
     return UserInfo.builder().email(email).name(name).group(group.toUpperCase()).build();
@@ -162,16 +194,23 @@ public class UserService {
   public UserInfo update(UserUpdate userUpdate) {
     String group = userUpdate.getGroup();
     String email = userUpdate.getEmail();
+
+    if(!groupService.existsByGroup(group)){
+      throw new GroupNotFoundException();
+    }
+
     UserInfo userInfo = findByGroupAndEmail(group, email).orElse(null);
     if (userInfo == null) {
       throw new UserNotFoundException();
     }
+
     Name name =
         LdapNameBuilder.newInstance().add("ou", group.toLowerCase()).add("uid", email).build();
     DirContextOperations context = template.lookupContext(name);
     context.setAttributeValue("cn", userUpdate.getToBeUpdatedName());
     context.setAttributeValue("sn", userUpdate.getToBeUpdatedName());
-    context.setAttributeValue("userPassword", userUpdate.getToBeUpdatedPassword());
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    context.setAttributeValue("userPassword", passwordEncoder.encode(userUpdate.getToBeUpdatedPassword()));
     template.modifyAttributes(context);
     return UserInfo.builder()
         .email(email)

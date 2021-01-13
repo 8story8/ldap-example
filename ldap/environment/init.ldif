@@ -9,7 +9,7 @@ objectClass: simpleSecurityObject
 cn: tester
 sn: tester
 uid: tester@blocko.io
-userPassword: 4321
+userPassword: $2a$10$/9Y6QWruoI2NgsJANYaTVu.4HNfw2kEOPvzF0lQ/1W37kjeL6jx8.
 
 dn: ou=admin,dc=blocko,dc=io
 objectClass: organizationalUnit
@@ -22,4 +22,4 @@ objectClass: simpleSecurityObject
 cn: 8story8
 sn: 8story8
 uid: 8story8@blocko.io
-userPassword: 1234
+userPassword: $2a$10$ED5ZCFU75CaDTqf9pPBQoOGUomIcuwowucM.CgJMq1McYFVv/ew.O

@@ -61,7 +61,7 @@ public class GroupService {
    * @param group
    * @return
    */
-  private boolean existsByGroup(String group) {
+  public boolean existsByGroup(String group) {
     Name name = LdapNameBuilder.newInstance().add("ou", group.toLowerCase()).build();
     try {
       template.lookup(
