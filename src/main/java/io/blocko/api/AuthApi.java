@@ -22,6 +22,11 @@ public class AuthApi {
 
   private final LdapTokenUtil ldapTokenUtil;
 
+  /**
+   * 로그인.
+   * @param loginForm
+   * @return
+   */
   @PostMapping("/login")
   @ApiOperation(value = "로그인", notes = "ALL")
   public ResponseEntity<ResultForm> login(@RequestBody LoginForm loginForm) {

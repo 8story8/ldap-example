@@ -24,6 +24,10 @@ public class GroupApi {
 
   private final GroupService groupService;
 
+  /**
+   * 그룹 목록 조회.
+   * @return
+   */
   @GetMapping
   @ApiOperation(value = "그룹 목록 조회", notes = "ADMIN")
   public ResponseEntity<ResultForm> findAll() {
@@ -31,8 +35,13 @@ public class GroupApi {
     return ResponseEntity.ok(new ResultForm(list));
   }
 
+  /**
+   * 그룹 상세 조회.
+   * @param group
+   * @return
+   */
   @GetMapping("/{group}")
-  @ApiOperation(value = "그룹 상세 정보 조회", notes = "ADMIN")
+  @ApiOperation(value = "그룹 상세 조회", notes = "ADMIN")
   public ResponseEntity<ResultForm> findDetailByGroup(@PathVariable("group") String group) {
     List<UserInfo> userInfo = groupService.findDetailByGroup(group);
     return ResponseEntity.ok(new ResultForm(userInfo));

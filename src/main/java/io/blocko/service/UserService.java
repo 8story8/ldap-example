@@ -240,6 +240,11 @@ public class UserService {
     return user;
   }
 
+  /**
+   * 사용자 인증 후 사용자 정보 반환.
+   * @param email
+   * @return
+   */
   public UserDetails loadUserByEmail(String email) {
     LdapQuery query = LdapQueryBuilder.query().where("uid").is(email);
     List<LdapUser> user =

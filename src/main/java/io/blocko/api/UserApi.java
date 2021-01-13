@@ -30,6 +30,11 @@ public class UserApi {
 
   private final UserService userService;
 
+  /**
+   * 사용자 조회.
+   * @param email
+   * @return
+   */
   @GetMapping("/{email}")
   @ApiOperation(value = "사용자 조회", notes = "ADMIN, USER")
   public ResponseEntity<ResultForm> findByEmail(@PathVariable("email") String email) {
@@ -38,6 +43,11 @@ public class UserApi {
     return ResponseEntity.ok(new ResultForm(userInfo));
   }
 
+  /**
+   * 사용자 조회 유효성 검사.
+   * 관리자는 모든 관리자, 사용자 조회 가능, 사용자는 자신만 조회 가능.
+   * @param email
+   */
   private void validateFindByEmail(String email) {
     boolean isUser = false;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,6 +65,10 @@ public class UserApi {
     }
   }
 
+  /**
+   * 사용자 목록 조회.
+   * @return
+   */
   @GetMapping
   @ApiOperation(value = "사용자 목록 조회", notes = "ADMIN")
   public ResponseEntity<ResultForm> findAll() {
@@ -103,6 +117,11 @@ public class UserApi {
     return ResponseEntity.ok(new ResultForm(userInfo));
   }
 
+  /**
+   * 사용자 수정, 삭제 유효성 검사.
+   * 사용자는 자신만 수정, 삭제 가능.
+   * @param email
+   */
   private void validateUpdateAndDelete(String email) {
     boolean isMe = false;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

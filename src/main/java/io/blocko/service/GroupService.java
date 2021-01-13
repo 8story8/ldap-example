@@ -27,6 +27,11 @@ public class GroupService {
 
   private final LdapTemplate template;
 
+  /**
+   * 그룹 상세 조회.
+   * @param group
+   * @return
+   */
   public List<UserInfo> findDetailByGroup(String group) {
     if (!existsByGroup(group)) {
       throw new GroupNotFoundException();
@@ -78,6 +83,10 @@ public class GroupService {
     }
   }
 
+  /**
+   * 그룹 목록 조회.
+   * @return
+   */
   public List<String> findAll() {
     Filter filter = new EqualsFilter("objectClass", "organizationalUnit");
     List<String> groupList =
