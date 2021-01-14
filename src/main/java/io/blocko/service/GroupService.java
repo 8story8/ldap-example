@@ -29,6 +29,7 @@ public class GroupService {
 
   /**
    * 그룹 상세 조회.
+   *
    * @param group
    * @return
    */
@@ -37,11 +38,10 @@ public class GroupService {
       throw new GroupNotFoundException();
     }
 
-    List<UserInfo> userInfoList = new ArrayList<>();
     Name name = LdapNameBuilder.newInstance().add("ou", group.toLowerCase()).build();
     Filter filter = new EqualsFilter("objectClass", "person");
     try {
-      userInfoList =
+      List<UserInfo> userInfoList =
           template.search(
               name,
               filter.encode(),
@@ -56,7 +56,7 @@ public class GroupService {
               });
       return userInfoList;
     } catch (NameNotFoundException e) {
-      return userInfoList;
+      return new ArrayList<>();
     }
   }
 
@@ -85,21 +85,26 @@ public class GroupService {
 
   /**
    * 그룹 목록 조회.
+   *
    * @return
    */
   public List<String> findAll() {
     Filter filter = new EqualsFilter("objectClass", "organizationalUnit");
-    List<String> groupList =
-        template.search(
-            LdapUtils.emptyLdapName(),
-            filter.encode(),
-            new AbstractContextMapper<String>() {
-              @Override
-              protected String doMapFromContext(DirContextOperations ctx) {
-                return ctx.getStringAttribute("ou").toUpperCase();
-              }
-            });
-    return groupList;
+    try {
+      List<String> groupList =
+          template.search(
+              LdapUtils.emptyLdapName(),
+              filter.encode(),
+              new AbstractContextMapper<String>() {
+                @Override
+                protected String doMapFromContext(DirContextOperations ctx) {
+                  return ctx.getStringAttribute("ou").toUpperCase();
+                }
+              });
+      return groupList;
+    } catch (NameNotFoundException e) {
+      return new ArrayList<>();
+    }
   }
 
   /**
@@ -154,6 +159,10 @@ public class GroupService {
    * @return
    */
   public String delete(String group) {
+
+    if (!existsByGroup(group)) {
+      throw new GroupNotFoundException();
+    }
 
     List<UserInfo> userInfoList = findDetailByGroup(group);
 

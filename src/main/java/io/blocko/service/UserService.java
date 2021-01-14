@@ -134,19 +134,23 @@ public class UserService {
    */
   public List<UserInfo> findAll() {
     LdapQuery query = LdapQueryBuilder.query().where("objectClass").is("person");
-    List<UserInfo> userList =
-        template.search(
-            query,
-            new AbstractContextMapper<UserInfo>() {
-              @Override
-              protected UserInfo doMapFromContext(DirContextOperations ctx) {
-                String email = ctx.getStringAttribute("uid");
-                String name = ctx.getStringAttribute("cn");
-                String group = LdapUtils.getStringValue(ctx.getDn(), "ou").toUpperCase();
-                return UserInfo.builder().email(email).name(name).group(group).build();
-              }
-            });
-    return userList;
+    try {
+      List<UserInfo> userList =
+          template.search(
+              query,
+              new AbstractContextMapper<UserInfo>() {
+                @Override
+                protected UserInfo doMapFromContext(DirContextOperations ctx) {
+                  String email = ctx.getStringAttribute("uid");
+                  String name = ctx.getStringAttribute("cn");
+                  String group = LdapUtils.getStringValue(ctx.getDn(), "ou").toUpperCase();
+                  return UserInfo.builder().email(email).name(name).group(group).build();
+                }
+              });
+      return userList;
+    } catch (NameNotFoundException e) {
+      return new ArrayList<>();
+    }
   }
 
   /**

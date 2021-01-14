@@ -36,7 +36,7 @@ public class UserApi {
    * @return
    */
   @GetMapping("/{email}")
-  @ApiOperation(value = "사용자 조회", notes = "ADMIN, USER")
+  @ApiOperation(value = "사용자 조회", notes = "ADMIN, USER\nADMIN은 모든 사용자 조회 가능, 사용자는 자신만 조회 가능\n사용자 Email이 존재하지 않으면 사용자 없음 오류 발생")
   public ResponseEntity<ResultForm> findByEmail(@PathVariable("email") String email) {
     validateFindByEmail(email);
     UserInfo userInfo = userService.findByEmail(email);
@@ -83,7 +83,7 @@ public class UserApi {
    * @return
    */
   @PostMapping
-  @ApiOperation(value = "사용자 등록", notes = "ALL")
+  @ApiOperation(value = "사용자 등록", notes = "ALL\n사용자가 존재하면 사용자 중복 오류 발생")
   public ResponseEntity<ResultForm> register(@RequestBody UserRegistration userRegistration) {
     UserInfo userInfo = userService.register(userRegistration);
     return ResponseEntity.ok(new ResultForm(userInfo));
@@ -96,7 +96,7 @@ public class UserApi {
    * @return
    */
   @PutMapping
-  @ApiOperation(value = "사용자 수정", notes = "ADMIN, USER : 자신만 수정 가능")
+  @ApiOperation(value = "사용자 수정", notes = "ADMIN, USER\n자신만 수정 가능\n그룹, 사용자 Email이 존재하지 않으면 사용자 없음 오류 발생")
   public ResponseEntity<ResultForm> update(@RequestBody UserUpdate userUpdate) {
     validateUpdateAndDelete(userUpdate.getEmail());
     UserInfo userInfo = userService.update(userUpdate);
@@ -110,7 +110,7 @@ public class UserApi {
    * @return
    */
   @DeleteMapping
-  @ApiOperation(value = "사용자 삭제", notes = "ADMIN, USER : 자신만 삭제 가능")
+  @ApiOperation(value = "사용자 삭제", notes = "ADMIN, USER\n자신만 삭제 가능\n그룹 사용자 Email이 존재하지 않으면 사용자 없음 오류 발생")
   public ResponseEntity<ResultForm> delete(@RequestBody UserDelete userDelete) {
     validateUpdateAndDelete(userDelete.getEmail());
     UserInfo userInfo = userService.delete(userDelete);
