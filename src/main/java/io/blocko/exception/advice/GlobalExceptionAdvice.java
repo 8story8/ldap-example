@@ -3,8 +3,6 @@ package io.blocko.exception.advice;
 import io.blocko.exception.GroupAlreadyExistsException;
 import io.blocko.exception.GroupInvalidDeleteException;
 import io.blocko.exception.GroupNotFoundException;
-import io.blocko.exception.UnauthenticatedUserException;
-import io.blocko.exception.UnauthorizedUserException;
 import io.blocko.exception.UserAlreadyExistsException;
 import io.blocko.exception.UserNotFoundException;
 import io.blocko.response.ErrorForm;

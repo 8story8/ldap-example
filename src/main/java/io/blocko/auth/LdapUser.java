@@ -18,7 +18,7 @@ public class LdapUser implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   @Builder
-  public LdapUser(String email, String name, Collection<? extends GrantedAuthority> authorities){
+  public LdapUser(String email, String name, Collection<? extends GrantedAuthority> authorities) {
     this.email = email;
     this.name = name;
     this.authorities = authorities;

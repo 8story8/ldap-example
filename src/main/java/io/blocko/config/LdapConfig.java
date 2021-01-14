@@ -22,7 +22,7 @@ public class LdapConfig {
   private String password;
 
   @Bean
-  public LdapContextSource contextSource(){
+  public LdapContextSource contextSource() {
     LdapContextSource contextSource = new LdapContextSource();
     contextSource.setUrl(url);
     contextSource.setBase(base);
@@ -32,7 +32,7 @@ public class LdapConfig {
   }
 
   @Bean
-  public LdapTemplate template(){
+  public LdapTemplate template() {
     return new LdapTemplate(contextSource());
   }
 }

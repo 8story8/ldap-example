@@ -13,7 +13,7 @@ public class LoginForm {
   private String password;
 
   @Builder
-  public LoginForm(String email, String password){
+  public LoginForm(String email, String password) {
     this.email = email;
     this.password = password;
   }

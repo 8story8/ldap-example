@@ -26,6 +26,7 @@ public class GroupApi {
 
   /**
    * 그룹 목록 조회.
+   *
    * @return
    */
   @GetMapping
@@ -37,6 +38,7 @@ public class GroupApi {
 
   /**
    * 그룹 상세 조회.
+   *
    * @param group
    * @return
    */
@@ -65,7 +67,9 @@ public class GroupApi {
    * @return
    */
   @PutMapping
-  @ApiOperation(value = "그룹 수정", notes = "ADMIN\n그룹이 존재하지 않으면 그룹 없음 오류 발생\n수정될 그룹이 존재하면 그룹 중복 오류 발생")
+  @ApiOperation(
+      value = "그룹 수정",
+      notes = "ADMIN\n그룹이 존재하지 않으면 그룹 없음 오류 발생\n수정될 그룹이 존재하면 그룹 중복 오류 발생")
   public ResponseEntity<ResultForm> update(@RequestBody GroupUpdate groupUpdate) {
     return ResponseEntity.ok(new ResultForm(groupService.update(groupUpdate)));
   }
@@ -77,7 +81,9 @@ public class GroupApi {
    * @return
    */
   @DeleteMapping("/{group}")
-  @ApiOperation(value = "그룹 삭제", notes = "ADMIN\n그룹이 존재하지 않으면 그룹 없음 오류 발생\n그룹에 소속된 사용자가 1명 이상이면 그룹 삭제 불가 오류 발생")
+  @ApiOperation(
+      value = "그룹 삭제",
+      notes = "ADMIN\n그룹이 존재하지 않으면 그룹 없음 오류 발생\n그룹에 소속된 사용자가 1명 이상이면 그룹 삭제 불가 오류 발생")
   public ResponseEntity<ResultForm> delete(@PathVariable("group") String group) {
     return ResponseEntity.ok(new ResultForm(groupService.delete(group)));
   }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LdapTokenAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
-  private static final String ERR_MSG="토큰을 입력해주세요.";
+  private static final String ERR_MSG = "토큰을 입력해주세요.";
 
   @Override
   public void commence(
@@ -24,7 +24,7 @@ public class LdapTokenAuthenticationEntryPoint implements AuthenticationEntryPoi
       throws IOException {
     String errorMsg = (String) request.getAttribute("ERR_MSG");
     ObjectMapper mapper = new ObjectMapper();
-    ErrorForm errorForm = new ErrorForm(errorMsg == null ? ERR_MSG:  errorMsg);
+    ErrorForm errorForm = new ErrorForm(errorMsg == null ? ERR_MSG : errorMsg);
     String errorResponse = mapper.writeValueAsString(errorForm);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("utf-8");

@@ -24,6 +24,7 @@ public class AuthApi {
 
   /**
    * 로그인.
+   *
    * @param loginForm
    * @return
    */
@@ -32,7 +33,9 @@ public class AuthApi {
   public ResponseEntity<ResultForm> login(@RequestBody LoginForm loginForm) {
     String email = loginForm.getEmail();
     String password = loginForm.getPassword();
-    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+    Authentication authentication =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(email, password));
     LdapUser user = (LdapUser) authentication.getPrincipal();
     String token = ldapTokenUtil.create(user.getEmail());
     return ResponseEntity.ok(new ResultForm(token));

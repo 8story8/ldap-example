@@ -20,11 +20,11 @@ public class LdapTokenUtil {
   private static final String HEADER_KEY = "Authorization";
   private static final String HEADER_VALUE = "Bearer ";
 
-  private static final String ERR_SIG_MSG="올바르지 않은 토큰 서명입니다.";
-  private static final String ERR_MAL_MSG="올바르지 않은 토큰 형식입니다.";
-  private static final String ERR_EXP_MSG="만료된 토큰입니다.";
-  private static final String ERR_UNS_MSG="지원하지 않는 토큰입니다.";
-  private static final String ERR_ILL_MSG="올바르지 않는 변수를 가지고 있는 토큰입니다.";
+  private static final String ERR_SIG_MSG = "올바르지 않은 토큰 서명입니다.";
+  private static final String ERR_MAL_MSG = "올바르지 않은 토큰 형식입니다.";
+  private static final String ERR_EXP_MSG = "만료된 토큰입니다.";
+  private static final String ERR_UNS_MSG = "지원하지 않는 토큰입니다.";
+  private static final String ERR_ILL_MSG = "올바르지 않는 변수를 가지고 있는 토큰입니다.";
 
   @Value("${jwt.secret}")
   private String secret;

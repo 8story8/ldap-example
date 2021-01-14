@@ -19,6 +19,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
   /**
    * 사용자 인증.
+   *
    * @param authentication
    * @return
    * @throws AuthenticationException

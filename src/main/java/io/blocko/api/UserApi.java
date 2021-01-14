@@ -83,7 +83,7 @@ public class UserApi {
    * @return
    */
   @PostMapping
-  @ApiOperation(value = "사용자 등록", notes = "ALL\n사용자가 존재하면 사용자 중복 오류 발생")
+  @ApiOperation(value = "사용자 등록", notes = "ALL\n그룹이 존재하지 않으면 그룹 없음 오류 발생\n사용자가 존재하면 사용자 중복 오류 발생")
   public ResponseEntity<ResultForm> register(@RequestBody UserRegistration userRegistration) {
     UserInfo userInfo = userService.register(userRegistration);
     return ResponseEntity.ok(new ResultForm(userInfo));
@@ -110,7 +110,7 @@ public class UserApi {
    * @return
    */
   @DeleteMapping
-  @ApiOperation(value = "사용자 삭제", notes = "ADMIN, USER\n자신만 삭제 가능\n그룹 사용자 Email이 존재하지 않으면 사용자 없음 오류 발생")
+  @ApiOperation(value = "사용자 삭제", notes = "ADMIN, USER\n자신만 삭제 가능\n그룹, 사용자 Email이 존재하지 않으면 사용자 없음 오류 발생")
   public ResponseEntity<ResultForm> delete(@RequestBody UserDelete userDelete) {
     validateUpdateAndDelete(userDelete.getEmail());
     UserInfo userInfo = userService.delete(userDelete);
